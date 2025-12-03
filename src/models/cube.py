@@ -28,7 +28,8 @@ def create_cube(side_length, origin=(0, 0, 0)):
 
     return vertices, edges
 
-def implicit_cube(a=0.4, N=80):
+def implicit_cube( side, N=80):
+    
     a = side / 2.0
     X, Y, Z = auto_domain(a, N=N)
     
