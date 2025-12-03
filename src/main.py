@@ -1,8 +1,7 @@
-import numpy as np
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 from models.cube import create_cube
 from models.torus import create_torus
+from models.pipe import create_pipe
 
 # Cria figura e eixo 3D
 fig = plt.figure()
@@ -20,7 +19,20 @@ yT = [v[1] for v in vT]
 fT = [v[2] for v in vT]
 ax.scatter(xT, yT, fT, s=10)
 
-print(eT)
+
+control_points = [
+    (0, 0, -3),
+    (1, 2, 1),
+    (-1, -2, -1),
+    (0, 0, 3)
+]
+
+vertices, edges = create_pipe(control_points)
+
+xs = [v[0] for v in vertices]
+ys = [v[1] for v in vertices]
+zs = [v[2] for v in vertices]
+ax.scatter(xs, ys, zs, s=10)
 
 ax.set_xlim([-5, 5])
 ax.set_ylim([-5, 5])

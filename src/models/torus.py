@@ -2,12 +2,11 @@
 
 import numpy as np
 
-def create_torus(inner_radius, outer_radius, origin=(0, 0, 0)):
+def create_torus(inner_radius, outer_radius, resolution=33, origin=(0, 0, 0)):
     if inner_radius <= 0 or outer_radius <= 0:
         raise ValueError("Radii must be positive numbers.")
 
     ox, oy, oz = origin
-    resolution = 5
 
     u = np.linspace(0, 2 * np.pi, resolution)
     v = np.linspace(0, 2 * np.pi, resolution)
