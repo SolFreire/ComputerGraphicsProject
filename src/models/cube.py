@@ -1,3 +1,4 @@
+from defining_domain import auto_domain
 # Generates a cube from its edge length. An optional origin parameter sets its position.
 
 def create_cube(side_length, origin=(0, 0, 0)):
@@ -6,6 +7,7 @@ def create_cube(side_length, origin=(0, 0, 0)):
 
     ox, oy, oz = origin
     half = side_length / 2
+    
 
     vertices = [
         (ox - half, oy - half, oz - half),
@@ -27,11 +29,9 @@ def create_cube(side_length, origin=(0, 0, 0)):
     return vertices, edges
 
 def implicit_cube(a=0.4, N=80):
-    x = np.linspace(-1, 1, N)
-    y = np.linspace(-1, 1, N)
-    z = np.linspace(-1, 1, N)
+    a = side / 2.0
+    X, Y, Z = auto_domain(a, N=N)
     
-    X, Y, Z = np.meshgrid(x, y, z, indexing='ij')
     F = np.maximum.reduce([np.abs(X), np.abs(Y), np.abs(Z)]) - a
     return F
 

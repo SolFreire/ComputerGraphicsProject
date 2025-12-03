@@ -1,6 +1,7 @@
-# Generates a torus from inner and outer radius. An optional origin parameter sets its position.
-
 import numpy as np
+from defining_domain import auto_domain
+
+# Generates a torus from inner and outer radius. An optional origin parameter sets its position.
 
 def create_torus(inner_radius, outer_radius, resolution=33, origin=(0, 0, 0)):
     if inner_radius <= 0 or outer_radius <= 0:
@@ -32,12 +33,9 @@ def create_torus(inner_radius, outer_radius, resolution=33, origin=(0, 0, 0)):
 
     return vertices, edges
 
-def implicit_torus(R=3, r=1, N=80):
-    x = np.linspace(-5, 5, N)
-    y = np.linspace(-5, 5, N)
-    z = np.linspace(-5, 5, N)
-
-    X, Y, Z = np.meshgrid(x, y, z, indexing='ij')
+def implicit_torus(R, r, N=80):
+    max_extent = R + r
+    X, Y, Z = auto_domain(max_extent, N=N)
 
     F = (np.sqrt(X**2 + Y**2) - R)**2 + Z**2 - r**2
     return F
