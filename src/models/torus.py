@@ -31,3 +31,14 @@ def create_torus(inner_radius, outer_radius, resolution=33, origin=(0, 0, 0)):
             edges.append((a, c))
 
     return vertices, edges
+
+def implicit_torus(R=3, r=1, N=80):
+    x = np.linspace(-5, 5, N)
+    y = np.linspace(-5, 5, N)
+    z = np.linspace(-5, 5, N)
+
+    X, Y, Z = np.meshgrid(x, y, z, indexing='ij')
+
+    F = (np.sqrt(X**2 + Y**2) - R)**2 + Z**2 - r**2
+    return F
+

@@ -25,3 +25,14 @@ def create_cube(side_length, origin=(0, 0, 0)):
     ]
 
     return vertices, edges
+
+def implicit_cube(a=0.4, N=80):
+    x = np.linspace(-1, 1, N)
+    y = np.linspace(-1, 1, N)
+    z = np.linspace(-1, 1, N)
+    
+    X, Y, Z = np.meshgrid(x, y, z, indexing='ij')
+    F = np.maximum.reduce([np.abs(X), np.abs(Y), np.abs(Z)]) - a
+    return F
+
+
