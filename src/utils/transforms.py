@@ -34,3 +34,13 @@ def translate(vertices, tx, ty, tz):
         new_vertices.append((v_new[0], v_new[1], v_new[2]))
 
     return new_vertices
+
+def transform(vertices, T):
+    new_vertices = []
+
+    for vx, vy, vz in vertices:
+        v = np.array([vx, vy, vz, 1])
+        v_new = T @ v
+        new_vertices.append((v_new[0], v_new[1], v_new[2]))
+
+    return new_vertices

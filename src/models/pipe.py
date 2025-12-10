@@ -82,5 +82,5 @@ def plot_pipe(ax, vertices, curve_resolution=20, circle_resolution=8):
             triangles.append([v[a], v[b], v[c]])
             triangles.append([v[a], v[c], v[d]])
 
-    mesh = Poly3DCollection(triangles, facecolor="blue", edgecolor="black", alpha=1)
+    mesh = Poly3DCollection(triangles, facecolor="magenta", edgecolor="black", alpha=1)
     ax.add_collection3d(mesh)

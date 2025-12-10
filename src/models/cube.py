@@ -42,7 +42,7 @@ def plot_cube(ax, vertices):
         [v[4], v[7], v[3]], [v[4], v[3], v[0]]
     ]
 
-    mesh = Poly3DCollection(triangles, facecolor="red", edgecolor="black", alpha=1)
+    mesh = Poly3DCollection(triangles, facecolor="cyan", edgecolor="black", alpha=1)
     ax.add_collection3d(mesh)
 
 
