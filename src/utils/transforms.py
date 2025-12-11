@@ -44,3 +44,16 @@ def transform(vertices, T):
         new_vertices.append((v_new[0], v_new[1], v_new[2]))
 
     return new_vertices
+
+def project_vertices(vertices):
+    new_vertices = []
+
+    for x, y, z in vertices:
+        if z == 0:
+            z = 1e-6
+
+        xp = x / z
+        yp = y / z
+        new_vertices.append((xp, yp))
+
+    return new_vertices

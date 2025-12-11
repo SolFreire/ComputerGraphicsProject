@@ -6,11 +6,7 @@ from models.cube import *
 from models.torus import *
 from models.pipe import *
 
-def questao_2():
-    # Cria figura e eixo 3D
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-
+def get_polys():
     cube_vertices, cube_edges = create_cube(4)
     cube_vertices = translate(cube_vertices, 4, 0, 4)
 
@@ -25,6 +21,15 @@ def questao_2():
     pipe_vertices, pipe_edges = create_pipe(control_points)
     pipe_vertices = translate(pipe_vertices, -5, 0, 0)
     pipe_vertices = scale(pipe_vertices, 2, 2, 2)
+
+    return cube_vertices, cube_edges, torus_vertices, torus_edges, pipe_vertices, pipe_edges
+
+def questao_2():
+    # Cria figura e eixo 3D
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
+    cube_vertices, cube_edges, torus_vertices, torus_edges, pipe_vertices, pipe_edges = get_polys()
 
     plot_cube(ax, cube_vertices)
     plot_torus(ax, torus_vertices)
@@ -40,31 +45,8 @@ def questao_2():
 
     plt.show()
 
-def questao_3():
-    # Cria figura e eixo 3D
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-
-    cube_vertices, cube_edges = create_cube(4)
-    cube_vertices = translate(cube_vertices, 4, 0, 4)
-
-    torus_vertices, torus_edges = create_torus(1, 2)
-
-    control_points = [
-        (0, 0, -3),
-        (1, 2, 1),
-        (-1, -2, -1),
-        (0, 0, 3)
-    ]
-    pipe_vertices, pipe_edges = create_pipe(control_points)
-    pipe_vertices = translate(pipe_vertices, -5, 0, 0)
-    pipe_vertices = scale(pipe_vertices, 2, 2, 2)
-
-    # ax.set_xlim([-8, 8])
-    # ax.set_ylim([-8, 8])
-    # ax.set_zlim([-8, 8])
-
-    eye = np.array([8, 0, 0])
+def perspective_matrix():
+    eye = np.array([0, -8, 0])
     at = np.array([0, 0, 0])
 
     z = at - eye
@@ -73,7 +55,7 @@ def questao_3():
     up = np.array([0, 1, 0])
     # Se z e up estão quase paralelos, troca up
     if abs(np.dot(up, z)) > 0.99:
-        up = np.array([1, 0, 0])
+        up = np.array([0, 0, -1])
 
     x = np.cross(up, z)
     x = x / np.linalg.norm(x)
@@ -81,12 +63,11 @@ def questao_3():
     y = np.cross(z, x)
 
     R = np.array([
-        [x[0], y[0], z[0], 0],
-        [x[1], y[1], z[1], 0],
-        [x[2], y[2], z[2], 0],
+        [x[0], x[1], x[2], 0],
+        [y[0], y[1], y[2], 0],
+        [z[0], z[1], z[2], 0],
         [0,    0,    0,    1]
     ])
-    print(R)
 
     T = np.array([
         [1, 0, 0, -eye[0]],
@@ -94,7 +75,17 @@ def questao_3():
         [0, 0, 1, -eye[2]],
         [0, 0, 0, 1]
     ])
-    RT = R @ T
+
+    return R @ T
+
+def questao_3():
+    # Cria figura e eixo 3D
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
+    cube_vertices, cube_edges, torus_vertices, torus_edges, pipe_vertices, pipe_edges = get_polys()
+
+    RT = perspective_matrix()
 
     cube_vertices = transform(cube_vertices, RT)
     torus_vertices = transform(torus_vertices, RT)
@@ -104,7 +95,7 @@ def questao_3():
     plot_torus(ax, torus_vertices)
     plot_pipe(ax, pipe_vertices)
 
-    ax.scatter(0, 0, 0, s=20, color="black", depthshade=True)
+    ax.scatter(0, 0, 0, s=30, color="black", depthshade=True)
 
     ax.set_xlabel("X")
     ax.set_ylabel("Y")
@@ -112,5 +103,38 @@ def questao_3():
 
     plt.show()
 
+def plot_solid_2d(ax, vertices_2d, edges, color):
+    for a, b in edges:
+        x1, y1 = vertices_2d[a]
+        x2, y2 = vertices_2d[b]
+        ax.plot([x1, x2], [y1, y2], color=color, linewidth=2)
+
+def questao_4():
+    fig, ax = plt.subplots(figsize=(6, 6))
+
+    cube_vertices, cube_edges, torus_vertices, torus_edges, pipe_vertices, pipe_edges = get_polys()
+
+    RT = perspective_matrix()
+
+    cube_vertices = transform(cube_vertices, RT)
+    torus_vertices = transform(torus_vertices, RT)
+    pipe_vertices = transform(pipe_vertices, RT)
+
+    cube_2d = project_vertices(cube_vertices)
+    torus_2d = project_vertices(torus_vertices)
+    pipe_2d = project_vertices(pipe_vertices)
+
+    plot_solid_2d(ax, cube_2d, cube_edges, color="cyan")
+    plot_solid_2d(ax, torus_2d, torus_edges, color="yellow")
+    plot_solid_2d(ax, pipe_2d, pipe_edges, color="magenta")
+
+    ax.set_aspect("equal")
+    ax.set_xlim(-1, 1)
+    ax.set_ylim(-1, 1)
+    ax.grid(True)
+
+    plt.show()
+
 # questao_2()
-questao_3()
+# questao_3()
+questao_4()
