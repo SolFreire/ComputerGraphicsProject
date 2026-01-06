@@ -19,7 +19,6 @@ def get_polys():
         (4, 16, 8)
     ]
     pipe_vertices, pipe_edges = create_pipe(control_points)
-    # pipe_vertices = translate(pipe_vertices, -5, 0, 0)
     pipe_vertices = scale(pipe_vertices, 2, 2, 2)
 
     return cube_vertices, cube_edges, torus_vertices, torus_edges, pipe_vertices, pipe_edges
@@ -46,14 +45,14 @@ def questao_2():
     plt.show()
 
 def perspective_matrix():
-    eye = np.array([0, -8, 0])
+    eye = np.array([0, 0, -8])
     at = np.array([0, 0, 0])
 
     z = at - eye
     z = z / np.linalg.norm(z)
 
     up = np.array([0, 1, 0])
-    # Se z e up estão quase paralelos, troca up
+
     if abs(np.dot(up, z)) > 0.99:
         up = np.array([0, 0, -1])
 
@@ -78,6 +77,44 @@ def perspective_matrix():
 
     return R @ T
 
+def plot_camera_frustum(ax,
+    z_near=0.1,
+    z_far=1.0,
+    near_size=0.05,
+    far_size=0.4,
+    color="red",
+    alpha=0.25
+):
+    n = near_size
+    zn = z_near
+    near = np.array([
+        [-n, -n, zn],
+        [ n, -n, zn],
+        [ n,  n, zn],
+        [-n,  n, zn],
+    ])
+
+    f = far_size
+    zf = z_far
+    far = np.array([
+        [-f, -f, zf],
+        [ f, -f, zf],
+        [ f,  f, zf],
+        [-f,  f, zf],
+    ])
+
+    faces = [
+        near,
+        far,
+        [near[0], near[1], far[1], far[0]],
+        [near[1], near[2], far[2], far[1]],
+        [near[2], near[3], far[3], far[2]],
+        [near[3], near[0], far[0], far[3]],
+    ]
+
+    frustum = Poly3DCollection(faces, facecolor=color, edgecolor="black", alpha=alpha)
+    ax.add_collection3d(frustum)
+
 def questao_3():
     # Cria figura e eixo 3D
     fig = plt.figure()
@@ -96,6 +133,7 @@ def questao_3():
     plot_pipe(ax, pipe_vertices)
 
     ax.scatter(0, 0, 0, s=30, color="black", depthshade=True)
+    plot_camera_frustum(ax)
 
     ax.set_xlabel("X")
     ax.set_ylabel("Y")
@@ -131,10 +169,11 @@ def questao_4():
     ax.set_aspect("equal")
     ax.set_xlim(-1, 1)
     ax.set_ylim(-1, 1)
+    ax.invert_xaxis()
     ax.grid(True)
 
     plt.show()
 
-questao_2()
-# questao_3()
+# questao_2()
+questao_3()
 # questao_4()
