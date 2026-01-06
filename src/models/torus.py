@@ -1,6 +1,5 @@
 import numpy as np
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
-# from defining_domain import auto_domain
 
 def create_torus(inner_radius, outer_radius, resolution=17, origin=(0, 0, 0)):
     if inner_radius <= 0 or outer_radius <= 0:
@@ -49,11 +48,3 @@ def plot_torus(ax, vertices, resolution=17):
 
     mesh = Poly3DCollection(triangles, facecolor="yellow", edgecolor="black", alpha=1)
     ax.add_collection3d(mesh)
-
-# def implicit_torus(R, r, N=80):
-#     max_extent = R + r
-#     X, Y, Z = auto_domain(max_extent, N=N)
-
-#     F = (np.sqrt(X**2 + Y**2) - R)**2 + Z**2 - r**2
-#     return F
-

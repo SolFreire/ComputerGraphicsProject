@@ -13,13 +13,13 @@ def get_polys():
     torus_vertices, torus_edges = create_torus(1, 2)
 
     control_points = [
-        (0, 0, -3),
-        (1, 2, 1),
-        (-1, -2, -1),
-        (0, 0, 3)
+        (-5, 0, -2),
+        (-5, -2, 2),
+        (4, 16, 8),
+        (4, 16, 8)
     ]
     pipe_vertices, pipe_edges = create_pipe(control_points)
-    pipe_vertices = translate(pipe_vertices, -5, 0, 0)
+    # pipe_vertices = translate(pipe_vertices, -5, 0, 0)
     pipe_vertices = scale(pipe_vertices, 2, 2, 2)
 
     return cube_vertices, cube_edges, torus_vertices, torus_edges, pipe_vertices, pipe_edges
@@ -135,6 +135,6 @@ def questao_4():
 
     plt.show()
 
-# questao_2()
+questao_2()
 # questao_3()
-questao_4()
+# questao_4()
