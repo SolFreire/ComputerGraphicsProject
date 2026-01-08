@@ -1,196 +1,61 @@
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
-from src.transforms import *
+from cube import *
+from torus import *
+from pipe import *
 
-from src.cube import *
-from src.torus import *
-from src.pipe import *
-
-def get_polys():
-    cube_vertices, cube_edges, cube_faces = create_cube(4)
-    cube_vertices = translate(cube_vertices, 3, 0, 5)
-
-    torus_vertices, torus_edges, torus_faces = create_torus(1, 2)
-    torus_vertices = rotate(torus_vertices, 45, 'x')
-
-    control_points = [
-        (-5, 0, -2),
-        (-5, -2, 2),
-        (4, 16, 8),
-        (4, 16, 8)
-    ]
-    pipe_vertices, pipe_edges, pipe_faces = create_pipe(control_points)
-    pipe_vertices = scale(pipe_vertices, 2, 2, 2)
-
-    return (
-        cube_vertices, cube_edges, cube_faces,
-        torus_vertices, torus_edges, torus_faces,
-        pipe_vertices, pipe_edges, pipe_faces
-    )
-
-
-def questao_2():
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-
-    cube_vertices, _, _, torus_vertices, _, _, pipe_vertices, _, _ = get_polys()
-
-    plot_cube(ax, cube_vertices)
-    plot_torus(ax, torus_vertices)
-    plot_pipe(ax, pipe_vertices)
-
-    ax.set_xlim([-8, 8])
-    ax.set_ylim([-8, 8])
-    ax.set_zlim([-8, 8])
-
+def config_ax(ax):
     ax.set_xlabel("X")
     ax.set_ylabel("Y")
     ax.set_zlabel("Z")
+    ax.set_xlim([-4, 4])
+    ax.set_ylim([-4, 4])
+    ax.set_zlim([-4, 4])
 
-    plt.show()
+def plot_faces(ax, vertices, faces, color):
+    poly3d = []
+    for face in faces:
+        poly3d.append([vertices[i] for i in face])
 
-def perspective_matrix():
-    eye = np.array([0, 0, -8])
-    at = np.array([0, 0, 0])
+    mesh = Poly3DCollection(poly3d, facecolors=color, edgecolors="black", alpha=1)
 
-    z = at - eye
-    z = z / np.linalg.norm(z)
+    ax.add_collection3d(mesh)
 
-    up = np.array([0, 1, 0])
+fig = plt.figure()
 
-    if abs(np.dot(up, z)) > 0.99:
-        up = np.array([0, 0, -1])
+cube_vertices, _, cube_faces = create_cube(4)
+torus_vertices, _, torus_faces = create_torus(1, 2)
+control_points = [
+    (0, 0, -2),
+    (0, -2, 2),
+    (4, 16, 8),
+    (4, 16, 8)
+]
+pipe_vertices, _, pipe_faces = create_pipe(control_points)
 
-    x = np.cross(up, z)
-    x = x / np.linalg.norm(x)
+ax1 = fig.add_subplot(231, projection='3d')
+config_ax(ax1)
+plot_faces(ax1, cube_vertices, cube_faces, "cyan")
 
-    y = np.cross(z, x)
+ax4 = fig.add_subplot(234, projection='3d')
+config_ax(ax4)
+plot_cube(ax4, cube_vertices)
 
-    R = np.array([
-        [x[0], x[1], x[2], 0],
-        [y[0], y[1], y[2], 0],
-        [z[0], z[1], z[2], 0],
-        [0,    0,    0,    1]
-    ])
+ax2 = fig.add_subplot(232, projection='3d')
+config_ax(ax2)
+plot_faces(ax2, torus_vertices, torus_faces, "yellow")
 
-    T = np.array([
-        [1, 0, 0, -eye[0]],
-        [0, 1, 0, -eye[1]],
-        [0, 0, 1, -eye[2]],
-        [0, 0, 0, 1]
-    ])
+ax5 = fig.add_subplot(235, projection='3d')
+config_ax(ax5)
+plot_torus(ax5, torus_vertices)
 
-    return R @ T
+ax3 = fig.add_subplot(233, projection='3d')
+config_ax(ax3)
+plot_faces(ax3, pipe_vertices, pipe_faces, "magenta")
 
-def plot_camera_frustum(ax,
-    z_near=0.1,
-    z_far=1.0,
-    near_size=0.05,
-    far_size=0.4,
-    color="red",
-    alpha=0.25
-):
-    n = near_size
-    zn = z_near
-    near = np.array([
-        [-n, -n, zn],
-        [ n, -n, zn],
-        [ n,  n, zn],
-        [-n,  n, zn],
-    ])
+ax6 = fig.add_subplot(236, projection='3d')
+config_ax(ax6)
+plot_pipe(ax6, pipe_vertices)
 
-    f = far_size
-    zf = z_far
-    far = np.array([
-        [-f, -f, zf],
-        [ f, -f, zf],
-        [ f,  f, zf],
-        [-f,  f, zf],
-    ])
-
-    faces = [
-        near,
-        far,
-        [near[0], near[1], far[1], far[0]],
-        [near[1], near[2], far[2], far[1]],
-        [near[2], near[3], far[3], far[2]],
-        [near[3], near[0], far[0], far[3]],
-    ]
-
-    frustum = Poly3DCollection(faces, facecolor=color, edgecolor="black", alpha=alpha)
-    ax.add_collection3d(frustum)
-
-def questao_3():
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-
-    cube_vertices, _, _, torus_vertices, _, _, pipe_vertices, _, _ = get_polys()
-
-    RT = perspective_matrix()
-
-    cube_vertices = transform(cube_vertices, RT)
-    torus_vertices = transform(torus_vertices, RT)
-    pipe_vertices = transform(pipe_vertices, RT)
-
-    plot_cube(ax, cube_vertices)
-    plot_torus(ax, torus_vertices)
-    plot_pipe(ax, pipe_vertices)
-
-    ax.scatter(0, 0, 0, s=30, color="black", depthshade=True)
-    plot_camera_frustum(ax)
-
-    ax.set_xlabel("X")
-    ax.set_ylabel("Y")
-    ax.set_zlabel("Z")
-
-    plt.show()
-
-def project_vertices(vertices):
-    new_vertices = []
-
-    for x, y, z in vertices:
-        if z == 0:
-            z = 1e-6
-
-        xp = x / z
-        yp = y / z
-        new_vertices.append((xp, yp))
-
-    return new_vertices
-
-def plot_solid_2d(ax, vertices_2d, edges, color):
-    for a, b in edges:
-        x1, y1 = vertices_2d[a]
-        x2, y2 = vertices_2d[b]
-        ax.plot([x1, x2], [y1, y2], color=color, linewidth=2)
-
-def questao_4():
-    fig, ax = plt.subplots(figsize=(6, 6))
-
-    cube_vertices, cube_edges, torus_vertices, torus_edges, pipe_vertices, pipe_edges = get_polys()
-
-    RT = perspective_matrix()
-
-    cube_vertices = transform(cube_vertices, RT)
-    torus_vertices = transform(torus_vertices, RT)
-    pipe_vertices = transform(pipe_vertices, RT)
-
-    cube_2d = project_vertices(cube_vertices)
-    torus_2d = project_vertices(torus_vertices)
-    pipe_2d = project_vertices(pipe_vertices)
-
-    plot_solid_2d(ax, cube_2d, cube_edges, color="cyan")
-    plot_solid_2d(ax, torus_2d, torus_edges, color="yellow")
-    plot_solid_2d(ax, pipe_2d, pipe_edges, color="magenta")
-
-    ax.set_aspect("equal")
-    ax.set_xlim(-1, 1)
-    ax.set_ylim(-1, 1)
-    ax.invert_xaxis()
-    ax.grid(True)
-
-    plt.show()
-
-# questao_2()
-# questao_3()
-# questao_4()
+plt.show()
