@@ -8,9 +8,10 @@ from models.pipe import *
 
 def get_polys():
     cube_vertices, cube_edges = create_cube(4)
-    cube_vertices = translate(cube_vertices, 4, 0, 4)
+    cube_vertices = translate(cube_vertices, 3, 0, 5)
 
     torus_vertices, torus_edges = create_torus(1, 2)
+    torus_vertices = rotate(torus_vertices, 45, 'x')
 
     control_points = [
         (-5, 0, -2),
@@ -24,7 +25,6 @@ def get_polys():
     return cube_vertices, cube_edges, torus_vertices, torus_edges, pipe_vertices, pipe_edges
 
 def questao_2():
-    # Cria figura e eixo 3D
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
@@ -116,7 +116,6 @@ def plot_camera_frustum(ax,
     ax.add_collection3d(frustum)
 
 def questao_3():
-    # Cria figura e eixo 3D
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
