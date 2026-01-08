@@ -57,3 +57,4 @@ def plot_torus(ax, vertices, resolution=17):
 
     mesh = Poly3DCollection(triangles, facecolor="yellow", edgecolor="black", alpha=1)
     ax.add_collection3d(mesh)
+
