@@ -1,9 +1,16 @@
 import matplotlib.pyplot as plt
+from matplotlib.patches import Polygon
 
 from cube import *
 from torus import *
 from pipe import *
 from common import *
+
+import matplotlib.colors as mcolors
+
+def darken_color(color, factor=0.7):
+    r, g, b = mcolors.to_rgb(color)
+    return (r * factor, g * factor, b * factor)
 
 def project_vertices(vertices):
     new_vertices = []
@@ -18,29 +25,52 @@ def project_vertices(vertices):
 
     return new_vertices
 
-def plot_solid_2d(ax, vertices_2d, edges, color):
-    for a, b in edges:
-        x1, y1 = vertices_2d[a]
-        x2, y2 = vertices_2d[b]
-        ax.plot([x1, x2], [y1, y2], color=color, linewidth=2)
+def collect_faces(vertices_3d, vertices_2d, faces, color):
+    face_data = []
+
+    for face in faces:
+        z_avg = sum(vertices_3d[i][2] for i in face) / len(face)
+        poly_2d = [vertices_2d[i] for i in face]
+
+        face_data.append({
+            "z": z_avg,
+            "poly": poly_2d,
+            "color": color
+        })
+
+    return face_data
 
 fig, ax = plt.subplots(figsize=(6, 6))
 
-cube_vertices, cube_edges, _, torus_vertices, torus_edges, _, pipe_vertices, pipe_edges, _ = get_polys()
+cube_vertices, _, cube_faces, torus_vertices, _, torus_faces, pipe_vertices, _, pipe_faces = get_polys()
 
 RT = perspective_matrix()
 
-cube_vertices = transform(cube_vertices, RT)
-torus_vertices = transform(torus_vertices, RT)
 pipe_vertices = transform(pipe_vertices, RT)
+torus_vertices = transform(torus_vertices, RT)
+cube_vertices = transform(cube_vertices, RT)
 
-cube_2d = project_vertices(cube_vertices)
-torus_2d = project_vertices(torus_vertices)
 pipe_2d = project_vertices(pipe_vertices)
+torus_2d = project_vertices(torus_vertices)
+cube_2d = project_vertices(cube_vertices)
 
-plot_solid_2d(ax, cube_2d, cube_edges, color="cyan")
-plot_solid_2d(ax, torus_2d, torus_edges, color="yellow")
-plot_solid_2d(ax, pipe_2d, pipe_edges, color="magenta")
+all_faces = []
+
+all_faces += collect_faces(pipe_vertices, pipe_2d, pipe_faces, "magenta")
+all_faces += collect_faces(torus_vertices, torus_2d, torus_faces, "yellow")
+all_faces += collect_faces(cube_vertices, cube_2d, cube_faces, "cyan")
+
+all_faces.sort(key=lambda f: f["z"], reverse=True)
+
+for face in all_faces:
+    patch = Polygon(
+        face["poly"],
+        closed=True,
+        facecolor=face["color"],
+        edgecolor=darken_color(face["color"], 0.5),
+        alpha=1
+    )
+    ax.add_patch(patch)
 
 ax.set_aspect("equal")
 ax.set_xlim(-1, 1)
