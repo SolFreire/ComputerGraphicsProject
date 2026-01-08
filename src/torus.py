@@ -29,7 +29,16 @@ def create_torus(inner_radius, outer_radius, resolution=17, origin=(0, 0, 0)):
             edges.append((a, b))
             edges.append((a, c))
 
-    return vertices, edges
+    faces = []
+    for i in range(resolution):
+        for j in range(resolution):
+            a = i * resolution + j
+            b = i * resolution + ((j + 1) % resolution)
+            c = ((i + 1) % resolution) * resolution + ((j + 1) % resolution)
+            d = ((i + 1) % resolution) * resolution + j
+            faces.append((a, b, c, d))
+
+    return vertices, edges, faces
 
 def plot_torus(ax, vertices, resolution=17):
     v = np.array(vertices)

@@ -1,16 +1,16 @@
 import matplotlib.pyplot as plt
 
-from utils.transforms import *
+from src.transforms import *
 
-from models.cube import *
-from models.torus import *
-from models.pipe import *
+from src.cube import *
+from src.torus import *
+from src.pipe import *
 
 def get_polys():
-    cube_vertices, cube_edges = create_cube(4)
+    cube_vertices, cube_edges, cube_faces = create_cube(4)
     cube_vertices = translate(cube_vertices, 3, 0, 5)
 
-    torus_vertices, torus_edges = create_torus(1, 2)
+    torus_vertices, torus_edges, torus_faces = create_torus(1, 2)
     torus_vertices = rotate(torus_vertices, 45, 'x')
 
     control_points = [
@@ -19,16 +19,21 @@ def get_polys():
         (4, 16, 8),
         (4, 16, 8)
     ]
-    pipe_vertices, pipe_edges = create_pipe(control_points)
+    pipe_vertices, pipe_edges, pipe_faces = create_pipe(control_points)
     pipe_vertices = scale(pipe_vertices, 2, 2, 2)
 
-    return cube_vertices, cube_edges, torus_vertices, torus_edges, pipe_vertices, pipe_edges
+    return (
+        cube_vertices, cube_edges, cube_faces,
+        torus_vertices, torus_edges, torus_faces,
+        pipe_vertices, pipe_edges, pipe_faces
+    )
+
 
 def questao_2():
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
-    cube_vertices, cube_edges, torus_vertices, torus_edges, pipe_vertices, pipe_edges = get_polys()
+    cube_vertices, _, _, torus_vertices, _, _, pipe_vertices, _, _ = get_polys()
 
     plot_cube(ax, cube_vertices)
     plot_torus(ax, torus_vertices)
@@ -119,7 +124,7 @@ def questao_3():
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
-    cube_vertices, cube_edges, torus_vertices, torus_edges, pipe_vertices, pipe_edges = get_polys()
+    cube_vertices, _, _, torus_vertices, _, _, pipe_vertices, _, _ = get_polys()
 
     RT = perspective_matrix()
 
@@ -139,6 +144,19 @@ def questao_3():
     ax.set_zlabel("Z")
 
     plt.show()
+
+def project_vertices(vertices):
+    new_vertices = []
+
+    for x, y, z in vertices:
+        if z == 0:
+            z = 1e-6
+
+        xp = x / z
+        yp = y / z
+        new_vertices.append((xp, yp))
+
+    return new_vertices
 
 def plot_solid_2d(ax, vertices_2d, edges, color):
     for a, b in edges:
@@ -174,5 +192,5 @@ def questao_4():
     plt.show()
 
 # questao_2()
-questao_3()
+# questao_3()
 # questao_4()

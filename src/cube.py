@@ -25,7 +25,16 @@ def create_cube(side_length, origin=(0, 0, 0)):
         (0, 4), (1, 5), (2, 6), (3, 7)
     ]
 
-    return vertices, edges
+    faces = [
+        (0,1,2,3),
+        (4,5,6,7),
+        (0,4,5,1),
+        (3,7,6,2),
+        (1,5,6,2),
+        (0,4,7,3),
+    ]
+
+    return vertices, edges, faces
 
 def plot_cube(ax, vertices):
     v = np.array(vertices)

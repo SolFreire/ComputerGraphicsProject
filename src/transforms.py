@@ -20,6 +20,7 @@ def translation_matrix(tx, ty, tz):
 
 def translate(vertices, tx, ty, tz):
     T = translation_matrix(tx, ty, tz)
+
     return transform(vertices, T)
 
 def scale_matrix(sx, sy, sz):
@@ -45,6 +46,7 @@ def scale(vertices, sx, sy, sz):
 def rotation_matrix_x(alpha):
     c = np.cos(alpha)
     s = np.sin(alpha)
+
     return np.array([
         [1, 0,  0, 0],
         [0, c, -s, 0],
@@ -55,6 +57,7 @@ def rotation_matrix_x(alpha):
 def rotation_matrix_y(alpha):
     c = np.cos(alpha)
     s = np.sin(alpha)
+
     return np.array([
         [ c, 0, s, 0],
         [ 0, 1, 0, 0],
@@ -65,6 +68,7 @@ def rotation_matrix_y(alpha):
 def rotation_matrix_z(alpha):
     c = np.cos(alpha)
     s = np.sin(alpha)
+
     return np.array([
         [c, -s, 0, 0],
         [s,  c, 0, 0],
@@ -78,7 +82,6 @@ def rotate(vertices, angle_deg, axis):
     v = np.array(vertices, dtype=float)
     center = v.mean(axis=0)
 
-    # Escolhe a matriz de rotação
     if axis.lower() == 'x':
         R = rotation_matrix_x(angle)
     elif axis.lower() == 'y':
@@ -91,20 +94,6 @@ def rotate(vertices, angle_deg, axis):
     T1 = translation_matrix(-center[0], -center[1], -center[2])
     T2 = translation_matrix( center[0],  center[1],  center[2])
 
-    # Matriz final
     M = T2 @ R @ T1
 
     return transform(vertices, M)
-
-def project_vertices(vertices):
-    new_vertices = []
-
-    for x, y, z in vertices:
-        if z == 0:
-            z = 1e-6
-
-        xp = x / z
-        yp = y / z
-        new_vertices.append((xp, yp))
-
-    return new_vertices

@@ -80,7 +80,18 @@ def create_pipe(control_points, radius=0.3, curve_resolution=20, circle_resoluti
                 c = (i + 1) * circle_resolution + j
                 edges.append((a, c))
 
-    return vertices, edges
+    faces = []
+    for i in range(curve_resolution - 1):
+        for j in range(circle_resolution):
+            a = i * circle_resolution + j
+            b = i * circle_resolution + (j + 1) % circle_resolution
+            c = (i + 1) * circle_resolution + (j + 1) % circle_resolution
+            d = (i + 1) * circle_resolution + j
+
+            faces.append((a, b, c, d))
+
+    return vertices, edges, faces
+
 
 def plot_pipe(ax, vertices, curve_resolution=20, circle_resolution=8):
     v = np.array(vertices)
