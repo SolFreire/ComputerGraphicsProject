@@ -27,11 +27,11 @@ def create_cube(side_length, origin=(0, 0, 0)):
 
     faces = [
         (0,1,2,3),
-        (4,5,6,7),
+        (4,7,6,5),
         (0,4,5,1),
-        (3,7,6,2),
+        (3,2,6,7),
         (1,5,6,2),
-        (0,4,7,3),
+        (0,3,7,4),
     ]
 
     return vertices, edges, faces
