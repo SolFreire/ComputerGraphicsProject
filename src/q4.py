@@ -110,7 +110,6 @@ for e in all_edges:
 ax.set_aspect("equal")
 ax.set_xlim(-1, 1)
 ax.set_ylim(-1, 1)
-ax.invert_xaxis()
 ax.grid(True)
 
 plt.show()
